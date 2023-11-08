@@ -8,7 +8,11 @@ import torch.nn.functional as F
 from tqdm import trange, tqdm
 
 class CVAE_hard_coded(nn.Module):
-    def __init__(self, img_shape, n_channels=1, latent_dim=2, kernel_size=3, stride=1):
+    """This is the actual model archicture used for training
+
+    img_shape = dimensions of 2D image, so for example (100,100)
+    """
+    def __init__(self, img_shape: tuple, n_channels: int =1, latent_dim:int =2, kernel_size:int =3, stride:int =1):
         """
         img_shape is a tuple containing the height and width of the image in that order. img_shape=(12,24)
         """
@@ -88,6 +92,10 @@ class CVAE_hard_coded(nn.Module):
         self.classifier = None
 
     def embed(self, x):
+        '''
+        Go from input to latent space representation
+        '''
+
         x = self.encoder_conv(x)
 
         x = x.view(-1, self.last_channel * self.last_h * self.last_w)
@@ -104,6 +112,9 @@ class CVAE_hard_coded(nn.Module):
         return z, mu, logvar
 
     def decode(self, z):
+        '''
+        go from latent space representation to reconstructed input
+        '''
         x = self.decoder_FC(z)
 
         x = x.view(-1, self.last_channel, self.last_h, self.last_w)
@@ -115,10 +126,16 @@ class CVAE_hard_coded(nn.Module):
 
 
     def forward(self, x):
+        '''
+        Full pass through the model
+        '''
         z, mu, logvar = self.embed(x)
         return self.decode(z), mu, logvar
 
     def get_encoder_parameters(self):
+        '''
+        Get all parameters for the encoder so that we can freeze them when we add the classifier
+        '''
         from itertools import chain
         return_params = chain(*[layer.parameters() for layer in self.encoder_layers])
         return return_params
@@ -609,7 +626,9 @@ class CVAE_hard_coded(nn.Module):
 
 
     # assuming arr.shape = [X,Y]
-    def prepare_new_input(self, arr):
+    def prepare_new_input(self, arr: np.array):
+        """Prepare a new image that wasn't in the original training data the way it would have been prepared if it was.
+        """
         image_tensor = transforms.ToTensor(arr).float()
         image_tensor = transforms.Normalize(torch.mean(image_tensor),torch.std(image_tensor))(image_tensor) 
         image_tensor = torch.unsqueeze(image_tensor, dim=0)
@@ -618,6 +637,9 @@ class CVAE_hard_coded(nn.Module):
 
     # assumes array is prepared by prepare_new_input
     def classify_new_input(self, arr, binary=False):
+        '''
+        Classify new input using one of the 2 classifiers
+        '''
         embedding, _, _ = self.embed(arr)
         if binary:
             prediction = self.binary_classifier.forward(embedding)
@@ -630,6 +652,9 @@ class CVAE_hard_coded(nn.Module):
 
 
 class sample_classifier(nn.Module):
+    '''
+    Class for the 2 pattern classifiers
+    '''
     def __init__(self, n_classes, n_input):
         # n_input == latent dimensions
         super(sample_classifier, self).__init__()

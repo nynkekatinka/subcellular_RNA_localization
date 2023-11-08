@@ -1,9 +1,11 @@
 import os
+import anndata as ad
 import numpy as np
 import pandas as pd
 from glob import glob
 import matplotlib.pyplot as plt
 import torch
+import torch.nn as nn
 from pathlib import Path
 import scanpy as sc
 from tqdm import tqdm
@@ -11,9 +13,30 @@ from PIL import Image
 Image.MAX_IMAGE_PIXELS = None 
 from skimage import io
 from io_data import loadSpatialDataset, loadBlurry, loadBlurryAdata
+from typing import Tuple
 
 
-def classify_embedding(model, embedding, binary=False):
+def classify_embedding(model: nn.Module, embedding: torch.Tensor, binary: bool = False) -> Tuple[int, torch.Tensor]:
+    """ Classify a singular embedding using a trained model
+
+    Parameters
+    ----------
+    model : nn.Module
+        model to use to classify
+    embedding : torch.Tensor
+        embedding
+    binary : bool
+        Flag to decide whether to classify 'pattern / no pattern' or 'which pattern'. Default = False.
+
+    Returns
+    -------
+    Tuple[int, torch.Tensor]
+    Prediction index = int: index of pointing to which of the model.unique_patterns is the classified patterns
+    Prediction tensor = torch.Tensor: tensor giving classification scores for all classes
+
+
+    """
+
     if binary:
         prediction = model.binary_classifier.forward(embedding)
     else:
@@ -22,7 +45,17 @@ def classify_embedding(model, embedding, binary=False):
     pred_index = int(pred_index.cpu())
     return pred_index, prediction
 
-def classifyAdata(adata, model, device):
+def classifyAdata(adata: ad.AnnData, model: nn.Module, device: torch.device):
+    """ Take an anndata object with a latent space representation and classify (both binary and more) all data points it contains
+
+    Parameters
+    ----------
+    adata : ad.AnnData
+    model : nn.Module
+        Trained model
+    device : torch.device
+        device to perform the classification on.
+    """
     binary_classification_column = []
     pattern_classification_column = []
     pattern_scores = []
@@ -31,6 +64,7 @@ def classifyAdata(adata, model, device):
     model["cvae"].to(tmp_device)
     
     for i in tqdm(range(len(adata))):
+
         tens = torch.from_numpy(adata[i].X)
         tens = tens.to(tmp_device)
         
@@ -56,6 +90,7 @@ def classifyAdata(adata, model, device):
     pattern_scores_df = pd.DataFrame(np.concatenate(pattern_scores, axis=0), columns=unique_patterns)
     binary_scores_df = pd.DataFrame(np.concatenate(binary_pattern_scores, axis=0), columns=["random_score", "pattern_score"]) 
 
+    # Fix indexed before concatenating so that it works correctly
     pattern_scores_df.index = adata.obs.index
     binary_scores_df.index = adata.obs.index
     adata.obs = pd.concat([adata.obs, pattern_scores_df, binary_scores_df], axis=1)

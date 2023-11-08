@@ -20,21 +20,46 @@ Image.MAX_IMAGE_PIXELS = None
 
 
 def loadBlurry(path_to_model: Union[Path, str] = "/mnt/data/david/SEP/models/supervised_with_dapi/2023-05-05_cvae_even_less_spots_dual_2classifiers_100weight_coordinateparsed_channel_dapi_with_labels_correctrotation_zoomed_fixedlocation_unbalanced_lr1e-05_classlr1e-03_nclasses6_beta1e-04_15ld_100epochs"):
+    '''
+    Load trained blurry torch model
+    '''
     blurry = torch.load(path_to_model)
     return blurry
 
 def loadBlurryAdata(path_to_adata: Union[Path, str] = "/mnt/data/david/SEP/embeddings/2023-05-05_cvae_even_less_spots_dual_2classifiers_100weight_coordinateparsed_channel_dapi_with_labels_correctrotation_zoomed_fixedlocation_unbalanced_lr1e-05_classlr1e-03_nclasses6_beta1e-04_15ld_100epochs_adata.h5ad"):
+    '''
+    Load anndata object that contains latent space of training data
+    '''
     adata = sc.read_h5ad(path_to_adata)
     return adata
     
 
-def loadSpatialDataset(single_gene_images_glob: str, model=None, adata_to_concat: ad.AnnData = None):
+def loadSpatialDataset(single_gene_images_glob: str, model: str = None, adata_to_concat: ad.AnnData = None) -> ad.AnnData:
+    """loadSpatialDataset.
+
+    Parameters
+    ----------
+    single_gene_images_glob : str
+        glob pattern pointing to all single gene, single cell images that need to be loaded in the dataset
+    model : str
+        path to torch model that should be used to create latent representations, default points to where the model is on my machine, so do not use.
+    adata_to_concat : ad.AnnData
+        anndata object to concatenate the loaded single images to. This allows you to recursively call this function, but als is mostly meant so you can load trained anndata, and concatenate it to the real spatial data you create with this function.
+        Default is not to concat anything.
+
+    Returns
+    -------
+    ad.AnnData
+
+    """
+
     if model is None:
         model = loadBlurry()
     else:
         model = loadBlurry(model)
 
     im_dataset = ImageDatasetWithDapis(single_gene_images_glob)
+    print(type(im_dataset))
     adata = convertImageDatasetIntoAnnData(im_dataset, model)
 
     if adata_to_concat is not None:
@@ -48,29 +73,48 @@ def loadSpatialDataset(single_gene_images_glob: str, model=None, adata_to_concat
 
 
 class ImageDatasetWithDapis(torch.utils.data.Dataset):
-    def __init__(self, glob_pattern):
+    def __init__(self, glob_pattern: Union[List, str], dapi_dir: str = None):
+        """__init__.
+
+        Parameters
+        ----------
+        glob_pattern : Union[List, str]
+            glob pattern pointing to the single-gene images that need to be loaded, or a list of the paths.
+        dapi_dir : str
+            path to the directory where the corresponding dapis are located. Default is none, and assumes that they are located in a directory called 'dapi_zoomed' on the the parent level of the glob_pattern. It is also assumed all your dapi images follow a pattern of {single_gene_path.stem}_DAPI.tif 
+        """
+
         convert_tensor = transforms.ToTensor()
         
-        self.image_list = sorted(glob(glob_pattern))
+        if isinstance(glob_pattern, str):
+            self.image_list = sorted(glob(glob_pattern))
+        else:
+            self.image_list = glob_pattern
 
+        # First compile list of all the corresponding dapis to the gene images.
         self.corresponding_dapis = []
         for image_path in self.image_list:
             image_path = Path(image_path)
-            corresponding_dapi_file = image_path.parent / "dapi_zoomed" / f"{image_path.stem}_DAPI.tif"
+            if dapi_dir is None:
+                corresponding_dapi_file = image_path.parent / "dapi_zoomed" / f"{image_path.stem}_DAPI.tif"
+            else:
+                corresponding_dapi_file = Path(dapi_dir) / f"{image_path.stem}_DAPI.tif"
             self.corresponding_dapis.append(corresponding_dapi_file)
 
         scaled_images = []
         scaled_dapis = []
+
+        # now we prepare the image-dapi pairs for passes through the model
         for image, dapi in tqdm(zip(self.image_list, self.corresponding_dapis), desc="Loading images", unit="image"):
             if ".tif" not in image:
                 continue
 
-            # im = Image.open(image)
             im = io.imread(image)
             dapi = io.imread(dapi)
             dapi = dapi.astype(np.float32)
             image_tensor = convert_tensor(im).float()
             dapi_tensor =  convert_tensor(dapi).float()
+            # Every once in a while something goes wrong and an empty image is passes, an normalizing then divides by zero
             try:
                 image_tensor = transforms.Normalize(torch.mean(image_tensor),torch.std(image_tensor))(image_tensor)
                 dapi_tensor = transforms.Normalize(torch.mean(dapi_tensor),torch.std(dapi_tensor))(dapi_tensor)
@@ -78,15 +122,16 @@ class ImageDatasetWithDapis(torch.utils.data.Dataset):
                 print(image, dapi)
                 continue
 
+            # Create an extra first dimension which is used for the batches in training: result shape = [1,100,100]
             image_tensor = torch.unsqueeze(image_tensor, dim=0)
             dapi_tensor = torch.unsqueeze(dapi_tensor, dim=0)
         
-
             scaled_image = self.scale(image_tensor, 0, 1)
             scaled_images.append(scaled_image)
             scaled_dapi = self.scale(dapi_tensor, 0, 1)
             scaled_dapis.append(scaled_dapi)
 
+        #convert list of images to torch array of images
         self.scaled_data = torch.cat(scaled_images, dim=0)
         self.scaled_dapi = torch.cat(scaled_dapis, dim=0)
 
@@ -136,7 +181,6 @@ class ImageDatasetWithDapis(torch.utils.data.Dataset):
         return v_p
 
 if __name__ == '__main__':
-    # adata = loadSpatialDataset(single_gene_images_glob = "/mnt/data/MERFISH/colonCancer1/parsed/coordinate_parsed/tile49/*.tif", dapi_images_glob = "/mnt/data/MERFISH/colonCancer1/parsed/coordinate_parsed/tile49/dapi_zoomed/*.tif", dapi_prefixes = ["cellID"], adata_to_concat = "/mnt/data/david/SEP/embeddings/2023-05-05_cvae_even_less_spots_dual_2classifiers_100weight_coordinateparsed_channel_dapi_with_labels_correctrotation_zoomed_fixedlocation_unbalanced_lr1e-05_classlr1e-03_nclasses6_beta1e-04_15ld_100epochs_adata.h5ad", model = "/mnt/data/david/SEP/models/supervised_with_dapi/2023-05-05_cvae_even_less_spots_dual_2classifiers_100weight_coordinateparsed_channel_dapi_with_labels_correctrotation_zoomed_fixedlocation_unbalanced_lr1e-05_classlr1e-03_nclasses6_beta1e-04_15ld_100epochs")
     from analyze import calcUmap, plotUmap
     adata = loadSpatialDataset(single_gene_images_glob = "/mnt/data/MERFISH/colonCancer1/parsed/coordinate_parsed/tile49/*.tif", adata_to_concat="blurry")
     calcUmap(adata)
