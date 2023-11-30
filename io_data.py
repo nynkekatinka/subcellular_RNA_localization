@@ -105,7 +105,7 @@ class ImageDatasetWithDapis(torch.utils.data.Dataset):
         scaled_dapis = []
 
         # now we prepare the image-dapi pairs for passes through the model
-        for image, dapi in tqdm(zip(self.image_list, self.corresponding_dapis), desc="Loading images", unit="image"):
+        for image, dapi in tqdm(zip(self.image_list, self.corresponding_dapis), desc="Loading images", unit="image", total = len(self.image_list)):
             if ".tif" not in image:
                 continue
 

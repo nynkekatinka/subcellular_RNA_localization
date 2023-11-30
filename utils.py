@@ -69,11 +69,15 @@ def plotReconstruction(im_dataset, model, out_file: str, nr_images: int = 4, tit
 
     plt.savefig(out_file)
 
-def calcLatent(im_dataset, model) -> np.ndarray:
+def calcLatent(im_dataset, model, device=None) -> np.ndarray:
     '''
     Calculate the latent space of a model/dataset combo
     This is also kind of a mess, it's an old piece of code that I'm too scared to change anything in.
     '''
+    if device is None:
+        device = model["device"]
+    else:
+        device = torch.device(device)
 
     # Make a train loader to do the calculation in batches
     batch_size = 512
@@ -82,10 +86,10 @@ def calcLatent(im_dataset, model) -> np.ndarray:
     
     with torch.no_grad():
         model["cvae"].eval()
-        model["cvae"].to(model["device"])
+        model["cvae"].to(device)
         latent_list = []
         for batch in tqdm(train_loader):
-            latent, _, _ = model["cvae"].embed(batch.to(model["device"]))
+            latent, _, _ = model["cvae"].embed(batch.to(device))
             latent_list.append(latent.to("cpu"))
         latent = torch.concat(latent_list, dim=0)
         latent = latent.numpy()
