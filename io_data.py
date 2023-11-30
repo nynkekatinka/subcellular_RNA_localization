@@ -23,7 +23,7 @@ def loadBlurry(path_to_model: Union[Path, str] = "/mnt/data/david/SEP/models/sup
     '''
     Load trained blurry torch model
     '''
-    blurry = torch.load(path_to_model)
+    blurry = torch.load(path_to_model, map_location=torch.device(0))
     return blurry
 
 def loadBlurryAdata(path_to_adata: Union[Path, str] = "/mnt/data/david/SEP/embeddings/2023-05-05_cvae_even_less_spots_dual_2classifiers_100weight_coordinateparsed_channel_dapi_with_labels_correctrotation_zoomed_fixedlocation_unbalanced_lr1e-05_classlr1e-03_nclasses6_beta1e-04_15ld_100epochs_adata.h5ad"):
@@ -105,7 +105,7 @@ class ImageDatasetWithDapis(torch.utils.data.Dataset):
         scaled_dapis = []
 
         # now we prepare the image-dapi pairs for passes through the model
-        for image, dapi in tqdm(zip(self.image_list, self.corresponding_dapis), desc="Loading images", unit="image"):
+        for image, dapi in tqdm(zip(self.image_list, self.corresponding_dapis), desc="Loading images", unit="image", total = len(self.image_list)):
             if ".tif" not in image:
                 continue
 

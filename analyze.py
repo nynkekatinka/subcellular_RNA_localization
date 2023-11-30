@@ -62,9 +62,9 @@ def plotUmap(adata, color: str, out_file: str = None, title: str = "", pattern_t
         alpha_list = None
     fig = sc.pl.umap(adata, color=color, title=title, s=s, palette=palette, alpha=alpha_list, legend_fontsize = legend_fontsize, return_fig = True)
     if out_file is None:
-        plt.savefig(out_file)
-    else:
         plt.show()
+    else:
+        plt.savefig(out_file)
 
 if __name__ == '__main__':
     ## Full workflow for creating new dataset plot
