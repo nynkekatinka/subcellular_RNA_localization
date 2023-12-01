@@ -19,14 +19,14 @@ from torchvision import datasets, transforms
 Image.MAX_IMAGE_PIXELS = None 
 
 
-def loadBlurry(path_to_model: Union[Path, str] = "/mnt/data/david/SEP/models/supervised_with_dapi/2023-05-05_cvae_even_less_spots_dual_2classifiers_100weight_coordinateparsed_channel_dapi_with_labels_correctrotation_zoomed_fixedlocation_unbalanced_lr1e-05_classlr1e-03_nclasses6_beta1e-04_15ld_100epochs"):
+def loadBlurry(path_to_model: Union[Path, str] = "/media/gambino/students_workdir/nynke/blurry_model/blurry_torch_model"):
     '''
     Load trained blurry torch model
     '''
-    blurry = torch.load(path_to_model)
+    blurry = torch.load(path_to_model, map_location=torch.device(0))
     return blurry
 
-def loadBlurryAdata(path_to_adata: Union[Path, str] = "/mnt/data/david/SEP/embeddings/2023-05-05_cvae_even_less_spots_dual_2classifiers_100weight_coordinateparsed_channel_dapi_with_labels_correctrotation_zoomed_fixedlocation_unbalanced_lr1e-05_classlr1e-03_nclasses6_beta1e-04_15ld_100epochs_adata.h5ad"):
+def loadBlurryAdata(path_to_adata: Union[Path, str] = "/media/gambino/students_workdir/nynke/blurry_model/simulated_trained_adata.h5ad"):
     '''
     Load anndata object that contains latent space of training data
     '''
@@ -182,7 +182,7 @@ class ImageDatasetWithDapis(torch.utils.data.Dataset):
 
 if __name__ == '__main__':
     from analyze import calcUmap, plotUmap
-    adata = loadSpatialDataset(single_gene_images_glob = "/mnt/data/MERFISH/colonCancer1/parsed/coordinate_parsed/tile49/*.tif", adata_to_concat="blurry")
+    adata = loadSpatialDataset(single_gene_images_glob = "/media/gambino/students_workdir/nynke/blurry_model/ileum_data/mouse_ileum/coordinate_parsed/*.tif", adata_to_concat="blurry")
     calcUmap(adata)
     plotUmap(adata, "pattern", "./test_real_data_overlay.png", pattern_to_alpha = "spatial")
 
