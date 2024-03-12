@@ -24,6 +24,7 @@ def loadBlurry(path_to_model: Union[Path, str] = "/media/gambino/students_workdi
     Load trained blurry torch model
     '''
     blurry = torch.load(path_to_model, map_location=torch.device(0))
+    blurry["device"] = device
     return blurry
 
 def loadBlurryAdata(path_to_adata: Union[Path, str] = "/media/gambino/students_workdir/nynke/blurry_model/simulated_trained_adata.h5ad"):
