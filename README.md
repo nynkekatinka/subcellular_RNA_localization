@@ -7,4 +7,3 @@
 - load merfish dataset `io_data.loadSpatialDataset`
 - Convert merfish dataset to anndata while parsing metadata `utils.convertImageDatasetIntoAnnData`
 - Calculate umap `analyze.calcUmap`
-
