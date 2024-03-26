@@ -5,3 +5,6 @@ __pycache__/utils.cpython-39.pyc
 test_real_data_overlay.png
 README.md
 .ipynb_checkpoints/classifier_benchmark-checkpoint.ipynb
+Model1_Resid_qqplot.png
+test_14D_count.png
+test_spot_count.png
