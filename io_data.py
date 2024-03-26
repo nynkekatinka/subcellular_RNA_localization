@@ -183,7 +183,7 @@ class ImageDatasetWithDapis(torch.utils.data.Dataset):
 
 if __name__ == '__main__':
     from analyze import calcUmap, plotUmap
-    adata = loadSpatialDataset(single_gene_images_glob = "/media/gambino/students_workdir/nynke/blurry_model/ileum_data/mouse_ileum/coordinate_parsed/*.tif", adata_to_concat="blurry")
-    calcUmap(adata)
-    plotUmap(adata, "pattern", "./test_real_data_overlay.png", pattern_to_alpha = "spatial")
+    adata = loadSpatialDataset(single_gene_images_glob = "/media/gambino/students_workdir/nynke/moor_ileum_data/tile44/*.tif", adata_to_concat="blurry")
+    #calcUmap(adata)
+    #plotUmap(adata, "pattern", "./test_real_data_overlay.png", pattern_to_alpha = "spatial")
 
