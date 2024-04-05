@@ -62,7 +62,7 @@ def train_test(adata, seed: int, split_per_cellID: bool = True):
     return adata_train, adata_test
 
 
-def subsetGenes(adata, pattern: str = 'pericellular', pattern_strength: int = 0.9, count_threshold: int = 11, high_or_low: str = 'low'):
+def subsetGenes(adata, pattern: str = 'pericellular', pattern_strength: int = 0.9, count_threshold: int = 11, high_or_low: str = 'low', mixed_counts: bool = False):
     """
     Subset the anndata object into a `1 gene multiple cells` object. Can filter the cells based on the number of spots, the pattern and the pattern strength.
 
@@ -76,16 +76,19 @@ def subsetGenes(adata, pattern: str = 'pericellular', pattern_strength: int = 0.
         strength of the pattern, which is labeled as prop in the anndata object. Default is 0.9.
     high_or_low : str
         Whether you want to filter genes with a higher or lower count than the given threshold. Default is lower.
+        If none, then no threshold is chosen and mixed counts are included. 
     count_threshold : int
         Count threshold to filter on. Default is 11, so that genes with count 0-10 are selected. For high, the threshold is 140.
-
+    mixed_counts: bool
+        True: all counts are included, False: only counts above or below the threshold are included. Default is False.
+        
     Returns
     -------
     ad.AnnData
 
     """
     adata_filtered = adata[(adata.obs['pattern'] == pattern) & 
-                           (adata.obs['n_spots'] < count_threshold if high_or_low == 'low' else adata.obs['n_spots'] > count_threshold) & 
+                           ((adata.obs['n_spots'] < count_threshold if high_or_low == 'low' else adata.obs['n_spots'] > count_threshold) if mixed_counts == False else 1 == 1) & 
                            (adata.obs['prop'] == pattern_strength)].copy()
 
     
