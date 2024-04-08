@@ -62,7 +62,7 @@ def train_test(adata, seed: int, split_per_cellID: bool = True):
     return adata_train, adata_test
 
 
-def subsetGenes(adata, pattern: str = 'pericellular', pattern_strength: int = 0.9, count_threshold: int = 11, high_or_low: str = 'low', mixed_counts: bool = False):
+def subsetGenes(adata, pattern: str = 'pericellular', pattern_strength: int = 0.9, count_threshold: int = 11, high_or_low: str = 'low', mixed_counts: bool = False, random_seed: int = 101):
     """
     Subset the anndata object into a `1 gene multiple cells` object. Can filter the cells based on the number of spots, the pattern and the pattern strength.
 
@@ -99,7 +99,7 @@ def subsetGenes(adata, pattern: str = 'pericellular', pattern_strength: int = 0.
         grouped = adata_filtered.obs.groupby('cell_id')
 
         # For each group, select at most one item
-        subsets = [group.sample(n=1) for _, group in grouped]
+        subsets = [group.sample(n=1, random_state = random_seed) for _, group in grouped]
 
         # Concatenate the results back into a DataFrame
         subset_obs = pd.concat(subsets)

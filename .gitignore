@@ -9,3 +9,14 @@ Model1_Resid_qqplot.png
 test_14D_count.png
 test_spot_count.png
 __pycache__/dataprep.cpython-39.pyc
+temp_objects/rf_cellEdge.pkl
+temp_objects/rf_cellEdge.pkl
+temp_objects/rf_extranuclear.pkl
+temp_objects/rf_foci.pkl
+temp_objects/rf_intranuclear.pkl
+temp_objects/rf_nuclearEdge.pkl
+temp_objects/rf_pattern.pkl
+temp_objects/rf_pericellular.pkl
+temp_objects/rf_perinuclear.pkl
+temp_objects/rf_protrusion.pkl
+.gitignore
