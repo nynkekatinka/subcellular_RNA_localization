@@ -73,7 +73,8 @@ def subsetGenes(adata, pattern: str = 'pericellular', pattern_strength: int = 0.
     pattern : str
         Type of subcellular expression pattern you want to filter on. Default is 'pericellular', which has the highest f1 RF score.
     pattern_strength : int
-        strength of the pattern, which is labeled as prop in the anndata object. Default is 0.9.
+        strength of the pattern, which is labeled as prop in the anndata object. Default is 0.9. 
+        If the pattern is random, then pattern_strength is not used, given that irrelevant for random when using the simFISH v2 definition of patterness (90% of points assigned to the pattern 'random' will still amount to 100% randomness).
     high_or_low : str
         Whether you want to filter genes with a higher or lower count than the given threshold. Default is lower.
         If none, then no threshold is chosen and mixed counts are included. 
@@ -88,8 +89,18 @@ def subsetGenes(adata, pattern: str = 'pericellular', pattern_strength: int = 0.
 
     """
     adata_filtered = adata[(adata.obs['pattern'] == pattern) & 
-                           ((adata.obs['n_spots'] < count_threshold if high_or_low == 'low' else adata.obs['n_spots'] > count_threshold) if mixed_counts == False else 1 == 1) & 
-                           (adata.obs['prop'] == pattern_strength)].copy()
+                           (
+                               (
+                                   adata.obs['n_spots'] < count_threshold if high_or_low == 'low' 
+                                   else adata.obs['n_spots'] > count_threshold
+                                ) if mixed_counts == False 
+                                else True
+                            ) & 
+                           (
+                               adata.obs['prop'] == pattern_strength if pattern != 'random' 
+                               else True
+                            )
+                        ].copy()
 
     
     subset_dict = {}
