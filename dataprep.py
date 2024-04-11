@@ -106,13 +106,10 @@ def subsetGenes(adata, pattern: str = 'pericellular', pattern_strength: int = 0.
     subset_dict = {}
     i = 0
     while len(adata_filtered.obs['cell_id'].unique()) > 0:
-        # Group by 'cell_id'
         grouped = adata_filtered.obs.groupby('cell_id')
 
-        # For each group, select at most one item
+        # For each group, select at most one item & concatenate results back into a DataFrame
         subsets = [group.sample(n=1, random_state = random_seed) for _, group in grouped]
-
-        # Concatenate the results back into a DataFrame
         subset_obs = pd.concat(subsets)
 
         # Use this DataFrame to subset the original anndata object and store in dictionary, while omitting the selected cells from the original adata object
