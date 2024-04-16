@@ -61,8 +61,8 @@ def train_test(adata, seed: int, split_per_cellID: bool = True):
 
     return adata_train, adata_test
 
-
-def subsetGenes(adata, pattern: str = 'pericellular', pattern_strength: int = 0.9, count_threshold: int = 11, high_or_low: str = 'low', mixed_counts: bool = False, random_seed: int = 101):
+# TO DO, can make mixed patterns including or excluding random. For now will do it excluding random. 
+def subsetGenes(adata, pattern: str = 'pericellular', mixed_patterns: bool = False, pattern_strength: int = 0.9, count_threshold: int = 11, high_or_low: str = 'low', mixed_counts: bool = False, random_seed: int = 101):
     """
     Subset the anndata object into a `1 gene multiple cells` object. Can filter the cells based on the number of spots, the pattern and the pattern strength.
 
@@ -72,6 +72,8 @@ def subsetGenes(adata, pattern: str = 'pericellular', pattern_strength: int = 0.
         complete anndata object.
     pattern : str
         Type of subcellular expression pattern you want to filter on. Default is 'pericellular', which has the highest f1 RF score.
+    mixed_patterns: bool
+        True: all patterns can be included, False: only the pattern type specified in `pattern` is included. Default is False. 
     pattern_strength : int
         strength of the pattern, which is labeled as prop in the anndata object. Default is 0.9. 
         If the pattern is random, then pattern_strength is not used, given that irrelevant for random when using the simFISH v2 definition of patterness (90% of points assigned to the pattern 'random' will still amount to 100% randomness).
@@ -88,7 +90,12 @@ def subsetGenes(adata, pattern: str = 'pericellular', pattern_strength: int = 0.
     ad.AnnData
 
     """
-    adata_filtered = adata[(adata.obs['pattern'] == pattern) & 
+    adata_filtered = adata[(
+                                (
+                                    adata.obs['pattern'] == pattern if mixed_patterns == False
+                                    else adata.obs['pattern'] != 'random'
+                                )
+                            ) & 
                            (
                                (
                                    adata.obs['n_spots'] < count_threshold if high_or_low == 'low' 
