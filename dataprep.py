@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import sklearn.model_selection as skm
+import anndata as ad
 
 
 def train_val_test(adata, seed: int, split_per_cellID: bool = True):
@@ -62,6 +63,7 @@ def train_test(adata, seed: int, split_per_cellID: bool = True):
     return adata_train, adata_test
 
 # TO DO, can make mixed patterns including or excluding random. For now will do it excluding random. 
+#TO DO: fix pattern strength from prop to pattern strength
 def subsetGenes(adata, pattern: str = 'pericellular', mixed_patterns: bool = False, pattern_strength: int = 0.9, count_threshold: int = 11, high_or_low: str = 'low', mixed_counts: bool = False, random_seed: int = 101):
     """
     Subset the anndata object into a `1 gene multiple cells` object. Can filter the cells based on the number of spots, the pattern and the pattern strength.
@@ -126,3 +128,54 @@ def subsetGenes(adata, pattern: str = 'pericellular', mixed_patterns: bool = Fal
         i += 1
 
     return subset_dict
+
+
+def balanceTrainingData(adata, testPattern: str = 'pericellular', include_no_pattern: bool = False, random_seed: int = 101):
+    """
+    Downsample the anndata object so that the test and control group for RF are equal size, while the control group is balanced for patterns and spot count. 
+    Assumes there are less test observations than the other subcellular expression patterns combined. 
+
+    Parameters
+    ----------
+    adata : ad.AnnData object
+        complete anndata object.
+    testPattern : str
+        Type of subcellular expression pattern you want to use as the test case. All other patterns will be used as control. 
+    include_no_pattern: bool
+        Whether the `no_pattern` pattern is included in the data or not. Default is False. 
+    random_seed: int
+        Seed for reproducability purposes. 
+        
+    Returns
+    -------
+    balanced_adata : ad.AnnData
+        test and control group are equal size, while the control group is balanced for patterns and spot count
+    """
+
+    if include_no_pattern == False:
+        adata = adata[adata.obs['pattern']!='random'].copy()
+
+    adata_test = adata[adata.obs['pattern']==testPattern]
+    adata_control = adata[adata.obs['pattern']!=testPattern]
+
+    
+    target_samplesize = int(len(adata_test)/len(adata_control.obs['pattern'].unique())//len(adata_control.obs['n_spots_interval'].unique()))
+    pattern_groups = adata_control.obs.groupby('pattern')
+    subset_obs_list = []
+
+    # loop over group patterns, for each pattern, group by n_spots_interval. In those interval groups, sample `target_samplesize`. 
+    for pattern, group in pattern_groups:
+        interval_groups = group.groupby('n_spots_interval')
+        subsets = [interval_group.sample(n=target_samplesize, random_state = random_seed) for _, interval_group in interval_groups]
+        subset_obs = pd.concat(subsets)
+        subset_obs_list.append(subset_obs)
+    
+    # Concatenate all subset observations and use these indices to subset the adata_control AnnData object
+    all_subset_obs = pd.concat(subset_obs_list)
+    adata_control_subset = adata_control[adata_control.obs.index.isin(all_subset_obs.index)]
+    
+    # Concatenate adata_test and adata_control_subset
+    adata = ad.concat([adata_test, adata_control_subset])
+    adata.obs[testPattern] = np.where(adata.obs["pattern"] == testPattern, testPattern, "other")
+
+    return adata
