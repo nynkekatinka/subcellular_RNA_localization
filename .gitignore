@@ -960,3 +960,8 @@ temp_objects/knn/rf_mixed_cellID_pericellular_nonnormalized.pkl
 temp_objects/knn/rf_mixed_cellID_pericellular.pkl
 temp_objects/rf_balanced/rf_intermediate_strong_trained.pkl
 temp_objects/rf_balanced/rf_pattern.pkl
+temp_objects/power_analysis.pkl
+temp_objects/rf_balanced/rf_pattern_balanced_singlejob.pkl
+temp_objects/rf_balanced/rf_pericellular_balanced_inclRandom.pkl
+temp_objects/rf_balanced/rf_pericellular_balanced_mixedIDs.pkl
+temp_objects/rf_balanced/rf_pericellular.pkl
