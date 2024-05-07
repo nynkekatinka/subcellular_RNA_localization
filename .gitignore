@@ -965,3 +965,15 @@ temp_objects/rf_balanced/rf_pattern_balanced_singlejob.pkl
 temp_objects/rf_balanced/rf_pericellular_balanced_inclRandom.pkl
 temp_objects/rf_balanced/rf_pericellular_balanced_mixedIDs.pkl
 temp_objects/rf_balanced/rf_pericellular.pkl
+images/umap_cell_id.png
+images/umap_pattern_strength.png
+images/umap_patterns.png
+images/umap_spot_count.png
+temp_objects/calcUmap_adata_all_spots.pkl
+temp_objects/calcUmap_adata_split_cellID.pkl
+temp_objects/power_analysis/power_analysis_bonferroni_corrected_lowStrength.pkl
+temp_objects/power_analysis/power_analysis_bonferroni_corrected.pkl
+temp_objects/power_analysis_lowStrength_withReplacement.pkl
+temp_objects/power_analysis/power_analysis_lowStrength.pkl
+temp_objects/power_analysis/power_analysis.pkl
+.ipynb_checkpoints/powerAnalysis-checkpoint.ipynb
