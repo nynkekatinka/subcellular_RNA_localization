@@ -977,3 +977,6 @@ temp_objects/power_analysis_lowStrength_withReplacement.pkl
 temp_objects/power_analysis/power_analysis_lowStrength.pkl
 temp_objects/power_analysis/power_analysis.pkl
 .ipynb_checkpoints/powerAnalysis-checkpoint.ipynb
+temp_objects/calcUmap_adata_mixed_cellID.pkl
+.ipynb_checkpoints/colocalization-checkpoint.ipynb
+temp_objects/power_analysis_allStrength_withoutReplacement_to5000_fixedDefaultPattern.pkl
