@@ -63,8 +63,67 @@ def train_test(adata, seed: int, split_per_cellID: bool = True):
     return adata_train, adata_test
 
 # TO DO, can make mixed patterns including or excluding random. For now will do it excluding random. 
-#TO DO: fix pattern strength from prop to pattern strength
-def subsetGenes(adata, pattern: str = 'pericellular', mixed_patterns: bool = False, pattern_strength: str = "strong", count_threshold: int = 11, high_or_low: str = 'low', mixed_counts: bool = False, random_seed: int = 101):
+def subsetGenes_splitCellID(adata, pattern: str = 'pericellular', mixed_patterns: bool = False, pattern_strength: str = "strong", rna_count: str = '10-30', mixed_counts: bool = False, random_seed: int = 101):
+    """
+    Subset the anndata object into a `1 gene multiple cells` object. Can filter the cells based on the number of spots, the pattern and the pattern strength.
+
+    Parameters
+    ----------
+    adata : ad.AnnData object
+        complete anndata object.
+    pattern : str
+        Type of subcellular expression pattern you want to filter on. Default is 'pericellular', which has the highest f1 RF score.
+    mixed_patterns: bool
+        True: all patterns can be included, False: only the pattern type specified in `pattern` is included. Default is False. 
+    pattern_strength : str
+        strength of the pattern, which is labeled as pattern_strength in the anndata object. Strong, which comes down to 45% of points fall in the pattern for protrusion, 90% of points are in pattern for all the other patterns. 
+        If the pattern is random, then pattern_strength is not used, given that irrelevant for random when using the simFISH v2 definition of patterness (90% of points assigned to the pattern 'random' will still amount to 100% randomness).
+    high_or_low : str
+        Whether you want to filter genes with a higher or lower count than the given threshold. Default is lower.
+        If none, then no threshold is chosen and mixed counts are included. 
+    count_threshold : int
+        Count threshold to filter on. Default is 11, so that genes with count 0-10 are selected. For high, the threshold is 140.
+    mixed_counts: bool
+        True: all counts are included, False: only counts above or below the threshold are included. Default is False.
+        
+    Returns
+    -------
+    ad.AnnData
+
+    """
+    adata_filtered = adata[(
+                                adata.obs['pattern'] == pattern if mixed_patterns == False
+                                else adata.obs['pattern'] != 'random'
+                            ) & 
+                           (
+                                adata.obs['rna_count'] == rna_count if mixed_counts == False 
+                                else True
+                            ) & 
+                           (
+                               adata.obs['pattern_strength'] == pattern_strength if pattern != 'random' 
+                               else True
+                            )
+                        ].copy()
+
+    
+    subset_dict = {}
+    i = 0
+    while len(adata_filtered.obs['cell_id'].unique()) > 0:
+        grouped = adata_filtered.obs.groupby('cell_id')
+
+        # For each group, select at most one item & concatenate results back into a DataFrame
+        subsets = [group.sample(n=1, random_state = random_seed) for _, group in grouped]
+        subset_obs = pd.concat(subsets)
+
+        # Use this DataFrame to subset the original anndata object and store in dictionary, while omitting the selected cells from the original adata object
+        count_subset = adata_filtered[adata_filtered.obs.index.isin(subset_obs.index)].copy()
+        subset_dict[i] = count_subset
+        adata_filtered = adata_filtered[~adata_filtered.obs.index.isin(subset_obs.index)].copy()
+        i += 1
+
+    return subset_dict
+
+def subset_power_analysis(adata, pattern: str = 'pericellular', mixed_patterns: bool = True, pattern_strength: str = "strong", rna_count: str = '10-30', sample_size: int = 5):
     """
     Subset the anndata object into a `1 gene multiple cells` object. Can filter the cells based on the number of spots, the pattern and the pattern strength.
 
@@ -99,11 +158,7 @@ def subsetGenes(adata, pattern: str = 'pericellular', mixed_patterns: bool = Fal
                                 )
                             ) & 
                            (
-                               (
-                                   adata.obs['n_spots'] < count_threshold if high_or_low == 'low' 
-                                   else adata.obs['n_spots'] > count_threshold
-                                ) if mixed_counts == False 
-                                else True
+                                adata.obs['rna_count'] == rna_count
                             ) & 
                            (
                                adata.obs['pattern_strength'] == pattern_strength if pattern != 'random' 
@@ -111,23 +166,13 @@ def subsetGenes(adata, pattern: str = 'pericellular', mixed_patterns: bool = Fal
                             )
                         ].copy()
 
+    subset = adata_filtered.obs.sample(n=sample_size) # , replace=True  --> old graphs
     
-    subset_dict = {}
-    i = 0
-    while len(adata_filtered.obs['cell_id'].unique()) > 0:
-        grouped = adata_filtered.obs.groupby('cell_id')
+    adata_subset = adata_filtered[adata_filtered.obs.index.isin(subset.index)]
 
-        # For each group, select at most one item & concatenate results back into a DataFrame
-        subsets = [group.sample(n=1, random_state = random_seed) for _, group in grouped]
-        subset_obs = pd.concat(subsets)
 
-        # Use this DataFrame to subset the original anndata object and store in dictionary, while omitting the selected cells from the original adata object
-        count_subset = adata_filtered[adata_filtered.obs.index.isin(subset_obs.index)].copy()
-        subset_dict[i] = count_subset
-        adata_filtered = adata_filtered[~adata_filtered.obs.index.isin(subset_obs.index)].copy()
-        i += 1
+    return adata_subset
 
-    return subset_dict
 
 def balanceTrainingData_pattern_noPattern(adata, random_seed: int = 101):
     """
