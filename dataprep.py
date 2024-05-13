@@ -3,6 +3,7 @@ import numpy as np
 import sklearn.model_selection as skm
 import anndata as ad
 
+seed = 101
 
 def train_val_test(adata, seed: int, split_per_cellID: bool = True):
     """ 
@@ -123,7 +124,7 @@ def subsetGenes_splitCellID(adata, pattern: str = 'pericellular', mixed_patterns
 
     return subset_dict
 
-def subset_power_analysis(adata, pattern: str = 'pericellular', mixed_patterns: bool = True, pattern_strength: str = "strong", rna_count: str = '10-30', sample_size: int = 5):
+def subset_power_analysis(adata, pattern: str = 'pericellular', mixed_patterns: bool = True, pattern_strength: str = "strong", rna_count: str = '10-30', sample_size: int = 5, random_seed: bool = False):
     """
     Subset the anndata object into a `1 gene multiple cells` object. Can filter the cells based on the number of spots, the pattern and the pattern strength.
 
@@ -166,7 +167,10 @@ def subset_power_analysis(adata, pattern: str = 'pericellular', mixed_patterns: 
                             )
                         ].copy()
 
-    subset = adata_filtered.obs.sample(n=sample_size) # , replace=True  --> old graphs
+    if random_seed == True:
+        subset = adata_filtered.obs.sample(n=sample_size, random_state = seed) 
+    else:
+        subset = adata_filtered.obs.sample(n=sample_size)
     
     adata_subset = adata_filtered[adata_filtered.obs.index.isin(subset.index)]
 

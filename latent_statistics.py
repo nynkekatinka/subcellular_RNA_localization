@@ -1,32 +1,35 @@
 import numpy as np
 import random
-from scipy.spatial.distance import cdist
-from math import factorial, comb
-from multiprocessing import Pool
+#from scipy.spatial.distance import cdist
+from math import comb
+import torch
 
 seed = 101
 random.seed(seed)
 np.random.seed(seed)
 
 def chamfer_L1_distance(point_cloud_1, point_cloud_2):
+    # Expand dims to prepare tensors for broadcasting (during pairwise distance calculation)
+    point_cloud_1 = point_cloud_1.unsqueeze(1)
+    point_cloud_2 = point_cloud_2.unsqueeze(0)
 
-    # Compute all pairwise Manhattan distances, output matrix = [distance_cloudA1, distance_cloud2]
-    distances_1_to_2 = cdist(point_cloud_1, point_cloud_2, metric='cityblock')
-    distances_2_to_1 = cdist(point_cloud_2, point_cloud_1, metric='cityblock')
+    # Compute all pairwise Manhattan distances. .sum(-1) -> sum distances of each latent dimension
+    distances_1_to_2 = torch.abs(point_cloud_1 - point_cloud_2).sum(-1)
+    distances_2_to_1 = torch.abs(point_cloud_2 - point_cloud_1).sum(-1)
 
-    # Get nearest neighbor for each point from point cloud 1 in point cloud 2 and vice versa
-    distances_1_to_2 = np.min(distances_1_to_2, axis=1)
-    distances_2_to_1 = np.min(distances_2_to_1, axis=1)
+    # Get nearest neighbor for each point from point cloud 1 in point cloud 2 and vice versa. 
+    # Dim=1 & dim=0 because with the broadcasting we changed the tensor shapes to (n_points, n_points, n_dims)
+    distances_1_to_2 = torch.min(distances_1_to_2, dim=1)[0]
+    distances_2_to_1 = torch.min(distances_2_to_1, dim=0)[0]
 
     # Compute the Chamfer distance
-    return np.mean(distances_1_to_2) + np.mean(distances_2_to_1)
+    return torch.mean(distances_1_to_2) + torch.mean(distances_2_to_1)
 
 
 def permutation_test(pattern, control, n_permutations: int = 9999):
-    observed_statistic = chamfer_L1_distance(pattern, control)
-    num_pattern = len(pattern)
     combined = np.concatenate([pattern, control])
     len_combined = len(combined)
+    num_pattern = len(pattern)
 
     # Count max number of permutations with Combination rule nCr, where r is the pattern size
     if num_pattern < 15:
@@ -44,14 +47,24 @@ def permutation_test(pattern, control, n_permutations: int = 9999):
 
     # Preallocate permuted null hypothesis array
     permuted_statistics = np.empty(n_permutations)
+    pattern = torch.tensor(pattern).cuda()
+    control = torch.tensor(control).cuda()
+    combined = torch.tensor(combined).cuda()
+    observed_statistic = chamfer_L1_distance(pattern, control)
 
     for i in range(n_permutations):
-        permuted = np.random.permutation(combined)
+        permuted = combined[torch.randperm(len(combined))]
         permuted_pattern = permuted[:num_pattern]
         permuted_control = permuted[num_pattern:]
         permuted_statistic = chamfer_L1_distance(permuted_pattern, permuted_control)
-        permuted_statistics[i] = permuted_statistic
+        permuted_statistics[i] = permuted_statistic.item()
     
+    #pattern = pattern.cpu().numpy()
+    #point_cloud_2 = point_cloud_2.cpu().numpy()
+    # Convert observed_statistic to numpy array and get its data type
+    observed_statistic = observed_statistic.cpu().numpy()
+    #permuted_statistics = permuted_statistics.cpu().numpy()
+
     #These functions come from scipy.stats.permutation_test(). They have now been integrated in my main function in line to improve the efficiency
     eps =  (0 if not np.issubdtype(observed_statistic.dtype, np.inexact)
             else np.finfo(observed_statistic.dtype).eps*100)
@@ -60,9 +73,9 @@ def permutation_test(pattern, control, n_permutations: int = 9999):
     cmps_greater = permuted_statistics >= observed_statistic - gamma
     # +1 is added to pvalues to add the observed value into the hypothetical population to make the pvalue more conservative. If it is an exact test, will use the true pvalue.
     adjustment = 0 if exact_test else 1
-    pvalues_less = (cmps_less.sum() + adjustment) / (n_permutations + adjustment)
+    #pvalues_less = (cmps_less.sum() + adjustment) / (n_permutations + adjustment)
     pvalues_greater = (cmps_greater.sum() + adjustment) / (n_permutations + adjustment)
-    #because with 2-tailed you should use alpha=0.025 as treshold, so now it gets scaled back to 0.05
-    p_value = np.minimum(pvalues_less, pvalues_greater) * 2 
+    # I do a 1-tailed test because I only care if the observed statistic has a larger chamfer distance than the H0 population.
+    p_value = pvalues_greater
 
     return p_value, observed_statistic, permuted_statistics
