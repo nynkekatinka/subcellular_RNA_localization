@@ -5,6 +5,35 @@ import anndata as ad
 
 seed = 101
 
+def map_interval(interval):
+    if interval == '0-10':
+        return '0-10'
+    elif interval in ['10-20', '20-30']:
+        return '10-30'
+    elif interval in ['30-40', '40-50', '50-60']:
+        return '30-60'
+    elif interval in ['70-80', '80-90', '90-100']:
+        return '70-100'
+    elif interval == '100+':
+        return '100+'
+    else:
+        return None
+    
+def initialize_adata(adata):
+    choices = ['strong', 'intermediate', 'low']
+    conditions = [
+        (adata.obs['prop'] == 0.9) | ((adata.obs['prop'] == 0.4) & (adata.obs['pattern'] == 'protrusion')),
+        (adata.obs['prop'] == 0.5) | ((adata.obs['prop'] == 0.2) & (adata.obs['pattern'] == 'protrusion')),
+        (adata.obs['prop'] == 0.1) | ((adata.obs['prop'] == 0.0) & (adata.obs['pattern'] == 'protrusion'))
+    ]
+    adata.obs['pattern_strength'] = np.select(conditions, choices, default='unknown')
+
+    # Include modified RNA count intervals in the adata object
+    adata.obs['rna_count'] = adata.obs['n_spots_interval'].apply(map_interval)
+
+
+    return adata
+
 def train_val_test(adata, seed: int, split_per_cellID: bool = True):
     """ 
     Split the anndata object into train, validation and test anndata objects with an 80-10-10 split.

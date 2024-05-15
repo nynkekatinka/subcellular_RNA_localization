@@ -3,10 +3,12 @@ import random
 #from scipy.spatial.distance import cdist
 from math import comb
 import torch
+import gc
 
 seed = 101
 random.seed(seed)
 np.random.seed(seed)
+torch.manual_seed(seed)
 
 def chamfer_L1_distance(point_cloud_1, point_cloud_2):
     # Expand dims to prepare tensors for broadcasting (during pairwise distance calculation)
@@ -21,6 +23,8 @@ def chamfer_L1_distance(point_cloud_1, point_cloud_2):
     # Dim=1 & dim=0 because with the broadcasting we changed the tensor shapes to (n_points, n_points, n_dims)
     distances_1_to_2 = torch.min(distances_1_to_2, dim=1)[0]
     distances_2_to_1 = torch.min(distances_2_to_1, dim=0)[0]
+
+    gc.collect()
 
     # Compute the Chamfer distance
     return torch.mean(distances_1_to_2) + torch.mean(distances_2_to_1)
@@ -58,6 +62,8 @@ def permutation_test(pattern, control, n_permutations: int = 9999):
         permuted_control = permuted[num_pattern:]
         permuted_statistic = chamfer_L1_distance(permuted_pattern, permuted_control)
         permuted_statistics[i] = permuted_statistic.item()
+        gc.collect()
+        torch.cuda.empty_cache()
     
     #pattern = pattern.cpu().numpy()
     #point_cloud_2 = point_cloud_2.cpu().numpy()
@@ -77,5 +83,7 @@ def permutation_test(pattern, control, n_permutations: int = 9999):
     pvalues_greater = (cmps_greater.sum() + adjustment) / (n_permutations + adjustment)
     # I do a 1-tailed test because I only care if the observed statistic has a larger chamfer distance than the H0 population.
     p_value = pvalues_greater
+
+    gc.collect()
 
     return p_value, observed_statistic, permuted_statistics
