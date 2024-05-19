@@ -4,6 +4,7 @@ from scipy.spatial.distance import cdist
 from math import comb
 import torch
 import gc
+import itertools
 
 seed = 101
 random.seed(seed)
@@ -22,7 +23,6 @@ def chamfer_L1_distance_cpu(point_cloud_1, point_cloud_2):
 
     # Compute the Chamfer distance
     return np.mean(distances_1_to_2) + np.mean(distances_2_to_1)
-
 
 
 def permutation_test_cpu(pattern, control, n_permutations: int = 9999):
@@ -165,7 +165,7 @@ def permutation_test_gpu(pattern, control, n_permutations: int = 9999):
     
     
     # Delete variables to free GPU memory
-    del pattern, control, combined, permuted, permuted_pattern, permuted_control, permuted_statistic, eps, gamma, cmps_less, cmps_greater, adjustment, pvalues_greater
+    del pattern, control, combined, permuted, permuted_pattern, permuted_control, permuted_statistic, eps, gamma, cmps_greater, adjustment, pvalues_greater
     gc.collect()
     torch.cuda.empty_cache()
     

@@ -226,7 +226,7 @@ def balanceTrainingData_pattern_noPattern(adata, random_seed: int = 101):
     """
         
     adata_test = adata[adata.obs['random_or_pattern']=='pattern']
-    adata_control = adata[adata.obs['random_or_pattern']=='no_pattern']
+    adata_control = adata[adata.obs['random_or_pattern']=='random']
     
     sample_size = len(adata_control)
     
