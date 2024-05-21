@@ -150,38 +150,3 @@ intermediate	70-100	753	1.0
 low	30-60	753	0.554
 low	0-10	753	1.0
 low	70-100	753	0.629
-strong	0-10	2297	-1	0.0
-strong	0-10	4009	0.0	0.0
-strong	0-10	7000	0.0	0.0
-strong	10-30	7000	0.0	0.0
-intermediate	0-10	2297	0.0	0.0
-intermediate	0-10	4009	0.0	0.0
-intermediate	0-10	7000	0.0	0.0
-intermediate	10-30	7000	0.0	0.0
-low	0-10	2297	0.0	0.0
-low	0-10	7000	0.0	0.0
-low	0-10	4009	0.0	0.0
-low	10-30	7000	0.0	0.0
-strong	0-10	2297	0.0	0.0
-strong	10-30	7000	0.0	0.0
-strong	0-10	4009	0.0	0.0
-strong	0-10	7000	0.0	0.0
-intermediate	0-10	2297	0.0	0.0
-intermediate	0-10	7000	0.0	0.0
-intermediate	0-10	4009	0.0	0.0
-intermediate	10-30	7000	0.0	0.0
-low	0-10	2297	0.0	0.0
-low	0-10	7000	0.0	0.0
-low	0-10	4009	0.0	0.0
-low	10-30	7000	0.0	0.0
-strong	0-10	4009	0.0	0.0
-strong	0-10	7000	0.0	0.0
-strong	0-10	2297	0.0	0.0
-strong	10-30	7000	0.0	0.0
-intermediate	0-10	4009	0.0	0.0
-intermediate	0-10	2297	0.0	0.0
-intermediate	0-10	7000	0.0	0.0
-strong	0-10	2297	0.0	0.0
-strong	0-10	4009	0.0	0.0
-strong	0-10	7000	0.0	0.0
-strong	10-30	7000	0.0	0.0
