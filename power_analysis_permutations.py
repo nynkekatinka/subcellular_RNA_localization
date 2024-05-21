@@ -46,6 +46,11 @@ def test_permutation(pattern, control, n_permutations: int = 9999, exact_test: b
     else:
         return p_value
 
+def process_sample(i, adata_test, strength, count, sample, exact_test):
+        pattern = subset_power_analysis(adata_test, mixed_patterns=True, pattern_strength=strength, rna_count=count, sample_size=sample, random_seed=False)
+        control = subset_power_analysis(adata_test, pattern='random', mixed_patterns=False, rna_count=count, sample_size=sample, random_seed=False)
+        return test_permutation(pattern.obsm["latent"], control.obsm["latent"], n_permutations=9999, exact_test=exact_test, return_distances=False)
+
 def compute_power_permutation(params, adata_test):
     logging.info('Starting compute_power_permutation with params: %s', params)
     strength, count, sample = params
@@ -70,15 +75,11 @@ def compute_power_permutation(params, adata_test):
         # If num_pattern is 15, the total combinations are 1.5e8, which already is much larger than 9999. So we skip calculating the factorials for 15+ to save compute time. 
         n_permutations = 9999
         exact_test = False
-    
-    def process_sample(i):
-        pattern = subset_power_analysis(adata_test, mixed_patterns=True, pattern_strength=strength, rna_count=count, sample_size=sample, random_seed=False)
-        control = subset_power_analysis(adata_test, pattern='random', mixed_patterns=False, rna_count=count, sample_size=sample, random_seed=False)
-        return test_permutation(pattern.obsm["latent"], control.obsm["latent"], n_permutations=9999, exact_test=exact_test, return_distances=False)
 
     try:
         with ProcessPoolExecutor() as executor:
-            pvalues = list(executor.map(process_sample, range(1000)))
+            futures = [executor.submit(process_sample, i, adata_test, strength, count, sample, exact_test) for i in range(1000)]
+            pvalues = [future.result() for future in as_completed(futures)]
             
         pvalues = np.array(pvalues)
         critical_value = 0.05
@@ -109,6 +110,8 @@ if __name__ == '__main__':
     adata_split_cellID = sc.read_h5ad("/media/gambino/students_workdir/nynke/new_model_with_cell_id_left_out_custom_nynke_panel_simulated_embeddings_adata.h5ad")
     adata_split_cellID = initialize_adata(adata_split_cellID)
     adata_test = adata_split_cellID[adata_split_cellID.obs['cell_id'].isin(adata_split_cellID.uns['test_cellIDs'])]
+
+    logging.info('Loaded the dataset')
 
     strengths = ['strong', 'intermediate', 'low']
     counts = adata_test.obs['rna_count'].unique()
