@@ -73,8 +73,8 @@ def latent_space_statistic(pattern, control, n_permutations: int = 9999, exact_t
         return p_value
 
 def process_sample(i, adata_test, strength, rna_count, cell_count, n_permutations, exact_test):
-        pattern = subset_power_analysis(adata_test, mixed_patterns=True, pattern_strength=strength, rna_count=rna_count, sample_size=cell_count, random_seed=False)
-        control = subset_power_analysis(adata_test, pattern='random', mixed_patterns=False, rna_count=rna_count, sample_size=cell_count, random_seed=False)
+        pattern = create_simulated_gene(adata_test, mixed_patterns=True, pattern_strength=strength, rna_count=rna_count, sample_size=cell_count, random_seed=False)
+        control = create_simulated_gene(adata_test, pattern='random', mixed_patterns=False, rna_count=rna_count, sample_size=cell_count, random_seed=False)
         return latent_space_statistic(pattern.obsm["latent"], control.obsm["latent"], n_permutations, exact_test=exact_test, return_distances=False)
 
 def compute_power_latent_space(params, adata_test):
@@ -155,8 +155,8 @@ def compute_power_rf(params, rf_singlejob, adata_test):
         
         for i in range(1000):
             # sample new gene. No random seed so that every time a different "gene" is sampled.
-            pattern = subset_power_analysis(adata_test, mixed_patterns = True, pattern_strength= strength, rna_count = rna_count, sample_size = cell_count)
-            control = subset_power_analysis(adata_test, pattern = 'random', mixed_patterns = False, rna_count = rna_count, sample_size = cell_count)
+            pattern = create_simulated_gene(adata_test, mixed_patterns = True, pattern_strength= strength, rna_count = rna_count, sample_size = cell_count)
+            control = create_simulated_gene(adata_test, pattern = 'random', mixed_patterns = False, rna_count = rna_count, sample_size = cell_count)
 
             # Calculate RF classification probabilities
             pattern_score = rf_singlejob.predict_proba(pattern.obsm["latent"])[:,1]
