@@ -1025,3 +1025,7 @@ temp_objects/rf_balanced/pattern_vs_other/protrusion.pkl
 temp_objects/rf_pericellular/rf_balanced.pkl
 temp_objects/rf_pericellular/rf_unbalanced_inclRandom.pkl
 temp_objects/rf_pericellular/rf_unbalanced.pkl
+app.log
+permute.log
+test.log
+temp_objects/dict_f1_TP.csv
