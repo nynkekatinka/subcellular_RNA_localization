@@ -22,7 +22,7 @@ def chamfer_L1_distance(distance_matrix, index_list):
     distances_2_to_1 = np.min(distance_matrix[np.ix_(index_list[len_pattern:], index_list[:len_pattern])], axis=1)
     return np.mean(distances_1_to_2) + np.mean(distances_2_to_1)
 
-def latent_space_statistic(pattern, control, n_permutations: int = 9999, exact_test: bool = False, return_distances: bool = False, for_power_purposes=False):
+def latent_space_statistic(pattern, control, n_permutations: int = 100001, exact_test: bool = False, return_distances: bool = False, for_power_purposes=False):
     """ Computes a single instance of the Chamfer-based latent space statistic. 
     Computes the Manhattan distance between all pattern & control instances, and then uses this distance matrix to create a matrix with the Chamfer distance of each permutation. 
     It then calculates a one-sided p-value based on how many permutations are larger than the observed statistic. 
@@ -45,21 +45,10 @@ def latent_space_statistic(pattern, control, n_permutations: int = 9999, exact_t
     observed_statistic = chamfer_L1_distance(distance_matrix, list(range(len_combined)))
 
     # If function is executed for the purposes of a power analysis, skip this step (as it is already done in the compute_power_latent_space() function)
-    # If not: count max number of permutations with Combination rule nCr, where r is the pattern size
+    # If not: count max number of permutations with Combination rule nCr, where r is the pattern size. Adjust n_permutations if it's larger than total_permutations and execute exact_test.
     if for_power_purposes == False:
-        if len_combined/2 < 15:
-            total_permutations = comb(len_combined, int(len_combined/2)) # built in implementation of nCr rule.
-            # Adjust n_permutations if it's larger than total_permutations
-            if 9999 > total_permutations:
-                exact_test = True
-                n_permutations = int(total_permutations)
-            else:
-                n_permutations = 9999
-                exact_test = False
-        else:
-            # If num_pattern is 15, the total combinations are 1.5e8, which already is much larger than 9999. So we skip calculating the factorials for 15+ to save compute time. 
-            n_permutations = 9999
-            exact_test = False
+        n_permutations = min(100001, int(comb(len_combined, len(pattern))) if len(pattern) < 14 else 100001)
+        exact_test = n_permutations < 100001
 
     # Generate random permutations of the indices to subset the distance matrix
     index_lists = np.apply_along_axis(np.random.permutation, 1, np.tile(list(range(len_combined)), (n_permutations, 1)))
@@ -85,6 +74,9 @@ def latent_space_statistic(pattern, control, n_permutations: int = 9999, exact_t
     pvalues_greater = (cmps_greater.sum() + adjustment) / (n_permutations + adjustment)
     p_value = pvalues_greater
 
+    logging.info('1 permutation done of: %s')
+
+
     if return_distances:
         return p_value, observed_statistic, chamfer_distances
     else:
@@ -105,23 +97,14 @@ def compute_power_latent_space(params, adata_test):
             f.write(f'{strength}\t{rna_count}\t{cell_count}\t-1\t-1\n')
         return (f'{strength}_{rna_count}_{cell_count}', -1)   # to easily filter out later.
     
-    # Count max number of permutations with Combination rule nCr, where r is the pattern size
-    if cell_count < 15:
-        total_permutations = comb(cell_count*2, cell_count) # built in implementation of nCr rule.
-        # Adjust n_permutations if it's larger than total_permutations
-        if 9999 > total_permutations:
-            exact_test = True
-            n_permutations = int(total_permutations)
-        else:
-            n_permutations = 9999
-            exact_test = False
-    else:
-        # If num_pattern is 15, the total combinations are 1.5e8, which already is much larger than 9999. So we skip calculating the factorials for 15+ to save compute time. 
-        n_permutations = 9999
-        exact_test = False
+    # Count max number of permutations with Combination rule nCr, where r is the pattern size. 
+    # If n_permutations is larger than total_permutations, adjust n_permutations and perform an exact test. 
+    # If num_pattern is 14, the total combinations are 4e7, which already is much larger than 9999/100001. So we skip calculating the factorials for 14+ to save compute time. 
+    n_permutations = min(100001, int(comb(cell_count * 2, cell_count)) if cell_count < 14 else 100001)
+    exact_test = n_permutations < 100001
 
     try:
-        with ProcessPoolExecutor(max_workers=8) as executor: # max_workers=4 , max_workers=8 at night
+        with ProcessPoolExecutor(max_workers=6) as executor: # max_workers=4 , max_workers=8 at night
             futures = [executor.submit(process_sample, i, adata_test, strength, rna_count, cell_count, n_permutations, exact_test) for i in range(1000)]
             pvalues = [future.result() for future in as_completed(futures)]
             
