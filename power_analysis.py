@@ -48,17 +48,19 @@ def latent_space_statistic(pattern, control, n_permutations: int = 100001, exact
     # If not: count max number of permutations with Combination rule nCr, where r is the pattern size. Adjust n_permutations if it's larger than total_permutations and execute exact_test.
     if for_power_purposes == False:
         n_permutations = min(100001, int(comb(len_combined, len(pattern))) if len(pattern) < 14 else 100001)
-        exact_test = n_permutations < 100001
+        exact_test = n_permutations < 100001 #100001
 
     # Generate random permutations of the indices to subset the distance matrix
     index_lists = np.apply_along_axis(np.random.permutation, 1, np.tile(list(range(len_combined)), (n_permutations, 1)))
 
     # Compute chamfer distances for all permutations
-    chamfer_distances = []
-    with ThreadPoolExecutor(max_workers=6) as executor:
+    chamfer_distances = np.zeros(index_lists.shape[0])
+    with ThreadPoolExecutor(max_workers=12) as executor:
         futures = [executor.submit(chamfer_L1_distance, distance_matrix, index_list) for index_list in index_lists]
+        i=0
         for future in as_completed(futures):
-            chamfer_distances.append(future.result())
+            chamfer_distances[i] = future.result()
+            i+=1
     chamfer_distances = np.array(chamfer_distances)
 
     # Compute p-value, based on permutation test from scipy.stats: number of permutations larger than observed statistic divided by total number of permutations. 
@@ -73,9 +75,6 @@ def latent_space_statistic(pattern, control, n_permutations: int = 100001, exact
     # one sided p-value, because we do not care if the observed statistic is significantly smaller than the null distribution.
     pvalues_greater = (cmps_greater.sum() + adjustment) / (n_permutations + adjustment)
     p_value = pvalues_greater
-
-    logging.info('1 permutation done of: %s')
-
 
     if return_distances:
         return p_value, observed_statistic, chamfer_distances

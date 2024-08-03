@@ -330,3 +330,149 @@
 16-May-24 10:56:33 - Finished compute_power_permutation with params: ('low', '30-60', 753)
 16-May-24 10:57:09 - Finished compute_power_permutation with params: ('low', '0-10', 753)
 16-May-24 11:04:21 - Finished compute_power_permutation with params: ('low', '70-100', 753)
+16-May-24 15:42:43 - Starting compute_power_permutation with params: ('low', '10-30', 753)
+16-May-24 16:13:37 - Starting compute_power_permutation with params: ('low', '10-30', 753)
+16-May-24 16:51:51 - Starting compute_power_permutation with params: ('low', '10-30', 753)
+17-May-24 11:21:21 - Starting compute_power_permutation with params: ('low', '10-30', 753)
+17-May-24 16:22:01 - Starting compute_power_permutation with params: ('low', '10-30', 753)
+17-May-24 16:29:09 - Loading adata
+17-May-24 16:29:26 - Starting compute_power_permutation with params: ('low', '10-30', 753)
+d26-May-24 23:07:01 - Loaded the dataset
+26-May-24 23:07:01 - Starting each param combination...
+26-May-24 23:07:01 - Starting compute_power_permutation with params: ('strong', '100+', 5)
+26-May-24 23:08:45 - Loaded the dataset
+26-May-24 23:08:45 - Starting each param combination...
+26-May-24 23:08:45 - Starting compute_power_permutation with params: ('strong', '100+', 5)
+27-May-24 02:01:04 - Finished compute_power_permutation with params: ('strong', '100+', 5)
+27-May-24 02:01:04 - Starting compute_power_permutation with params: ('strong', '100+', 9)
+27-May-24 02:51:59 - Finished compute_power_permutation with params: ('strong', '100+', 9)
+27-May-24 02:51:59 - Starting compute_power_permutation with params: ('strong', '100+', 15)
+27-May-24 03:42:40 - Finished compute_power_permutation with params: ('strong', '100+', 15)
+27-May-24 03:42:40 - Starting compute_power_permutation with params: ('strong', '100+', 27)
+27-May-24 04:33:23 - Finished compute_power_permutation with params: ('strong', '100+', 27)
+27-May-24 04:33:23 - Starting compute_power_permutation with params: ('strong', '100+', 46)
+27-May-24 05:24:06 - Finished compute_power_permutation with params: ('strong', '100+', 46)
+27-May-24 05:24:06 - Starting compute_power_permutation with params: ('strong', '100+', 81)
+27-May-24 06:15:37 - Finished compute_power_permutation with params: ('strong', '100+', 81)
+27-May-24 06:15:37 - Starting compute_power_permutation with params: ('strong', '100+', 142)
+27-May-24 07:07:11 - Finished compute_power_permutation with params: ('strong', '100+', 142)
+27-May-24 07:07:11 - Starting compute_power_permutation with params: ('strong', '100+', 247)
+27-May-24 07:58:45 - Finished compute_power_permutation with params: ('strong', '100+', 247)
+27-May-24 07:58:45 - Starting compute_power_permutation with params: ('strong', '100+', 432)
+27-May-24 08:50:24 - Finished compute_power_permutation with params: ('strong', '100+', 432)
+27-May-24 08:50:24 - Starting compute_power_permutation with params: ('strong', '100+', 753)
+31-Jul-24 21:49:06 - Loaded the dataset
+31-Jul-24 21:49:06 - Starting each param combination...
+31-Jul-24 21:49:06 - Starting compute_power_latent_space with params: ('strong', '100+', 5)
+31-Jul-24 22:00:57 - Loaded the dataset
+31-Jul-24 22:00:57 - Starting each param combination...
+31-Jul-24 22:00:57 - Starting compute_power_latent_space with params: ('strong', '100+', 5)
+01-Aug-24 12:19:28 - Loaded the dataset
+01-Aug-24 12:19:28 - Starting each param combination...
+01-Aug-24 12:19:28 - Starting compute_power_latent_space with params: ('strong', '100+', 5)
+01-Aug-24 12:41:36 - Loaded the dataset
+01-Aug-24 12:41:36 - Starting each param combination...
+01-Aug-24 12:41:36 - Starting compute_power_latent_space with params: ('strong', '100+', 5)
+01-Aug-24 12:46:23 - Loaded the dataset
+01-Aug-24 12:46:23 - Starting each param combination...
+01-Aug-24 12:46:23 - Starting compute_power_latent_space with params: ('strong', '100+', 5)
+01-Aug-24 13:04:23 - Loaded the dataset
+01-Aug-24 13:04:23 - Starting each param combination...
+01-Aug-24 13:04:23 - Starting compute_power_latent_space with params: ('strong', '100+', 5)
+01-Aug-24 13:13:27 - Loaded the dataset
+01-Aug-24 13:13:27 - Starting each param combination...
+01-Aug-24 13:13:27 - Starting compute_power_latent_space with params: ('strong', '100+', 5)
+01-Aug-24 13:13:37 - start permutations: %s
+01-Aug-24 13:13:43 - start permutations: %s
+01-Aug-24 13:13:50 - start permutations: %s
+01-Aug-24 13:13:56 - start permutations: %s
+01-Aug-24 13:14:03 - start permutations: %s
+01-Aug-24 13:14:09 - start permutations: %s
+01-Aug-24 13:14:15 - start permutations: %s
+01-Aug-24 13:14:22 - start permutations: %s
+01-Aug-24 13:14:28 - start permutations: %s
+01-Aug-24 13:14:34 - start permutations: %s
+01-Aug-24 13:14:41 - start permutations: %s
+01-Aug-24 13:14:47 - start permutations: %s
+01-Aug-24 13:14:54 - start permutations: %s
+01-Aug-24 13:15:00 - start permutations: %s
+01-Aug-24 13:15:07 - start permutations: %s
+01-Aug-24 13:15:13 - start permutations: %s
+01-Aug-24 13:15:20 - start permutations: %s
+01-Aug-24 13:15:26 - start permutations: %s
+01-Aug-24 13:15:32 - start permutations: %s
+01-Aug-24 13:15:39 - start permutations: %s
+01-Aug-24 13:15:45 - start permutations: %s
+01-Aug-24 13:15:52 - start permutations: %s
+01-Aug-24 13:15:58 - start permutations: %s
+01-Aug-24 13:16:05 - start permutations: %s
+01-Aug-24 13:16:14 - start permutations: %s
+01-Aug-24 13:16:24 - start permutations: %s
+01-Aug-24 13:16:29 - start permutations: %s
+01-Aug-24 13:16:35 - start permutations: %s
+01-Aug-24 13:16:42 - start permutations: %s
+01-Aug-24 13:16:49 - start permutations: %s
+01-Aug-24 13:16:56 - start permutations: %s
+01-Aug-24 13:17:02 - start permutations: %s
+01-Aug-24 13:17:09 - start permutations: %s
+01-Aug-24 13:17:16 - start permutations: %s
+01-Aug-24 13:17:22 - start permutations: %s
+01-Aug-24 13:17:29 - start permutations: %s
+01-Aug-24 13:17:35 - start permutations: %s
+01-Aug-24 13:17:41 - start permutations: %s
+01-Aug-24 13:17:48 - start permutations: %s
+01-Aug-24 13:17:55 - start permutations: %s
+01-Aug-24 13:18:01 - start permutations: %s
+01-Aug-24 13:18:08 - start permutations: %s
+01-Aug-24 13:18:14 - start permutations: %s
+01-Aug-24 13:18:21 - start permutations: %s
+01-Aug-24 13:18:28 - start permutations: %s
+01-Aug-24 13:18:43 - start permutations: %s
+01-Aug-24 13:18:49 - start permutations: %s
+01-Aug-24 13:18:56 - start permutations: %s
+01-Aug-24 13:19:03 - start permutations: %s
+01-Aug-24 13:19:10 - start permutations: %s
+01-Aug-24 13:19:16 - start permutations: %s
+01-Aug-24 13:19:23 - start permutations: %s
+01-Aug-24 13:19:30 - start permutations: %s
+01-Aug-24 13:19:36 - start permutations: %s
+01-Aug-24 13:19:42 - start permutations: %s
+01-Aug-24 13:21:51 - Loaded the dataset
+01-Aug-24 13:21:51 - Starting each param combination...
+01-Aug-24 13:21:51 - Starting compute_power_latent_space with params: ('strong', '100+', 5)
+01-Aug-24 13:25:39 - Loaded the dataset
+01-Aug-24 13:25:39 - Starting each param combination...
+01-Aug-24 13:25:39 - Starting compute_power_latent_space with params: ('strong', '100+', 5)
+01-Aug-24 13:45:17 - Loaded the dataset
+01-Aug-24 13:45:17 - Starting each param combination...
+01-Aug-24 13:45:17 - Starting compute_power_latent_space with params: ('strong', '100+', 5)
+02-Aug-24 16:14:58 - Loaded the dataset
+02-Aug-24 16:14:58 - Starting each param combination...
+02-Aug-24 16:14:58 - Starting compute_power_latent_space with params: ('strong', '100+', 5)
+02-Aug-24 16:18:01 - Loaded the dataset
+02-Aug-24 16:18:01 - Starting each param combination...
+02-Aug-24 16:18:01 - Starting compute_power_latent_space with params: ('strong', '100+', 5)
+02-Aug-24 16:21:46 - Loaded the dataset
+02-Aug-24 16:21:46 - Starting each param combination...
+02-Aug-24 16:21:46 - Starting compute_power_latent_space with params: ('strong', '100+', 5)
+02-Aug-24 19:14:42 - Loaded the dataset
+02-Aug-24 19:14:42 - Starting each param combination...
+02-Aug-24 19:14:42 - Starting compute_power_latent_space with params: ('strong', '100+', 5)
+02-Aug-24 21:04:53 - Finished compute_power_permutation with params: ('strong', '100+', 5)
+02-Aug-24 21:04:53 - Starting compute_power_latent_space with params: ('strong', '100+', 9)
+02-Aug-24 22:55:34 - Finished compute_power_permutation with params: ('strong', '100+', 9)
+02-Aug-24 22:55:34 - Starting compute_power_latent_space with params: ('strong', '100+', 15)
+03-Aug-24 00:48:26 - Finished compute_power_permutation with params: ('strong', '100+', 15)
+03-Aug-24 00:48:26 - Starting compute_power_latent_space with params: ('strong', '100+', 27)
+03-Aug-24 02:44:16 - Finished compute_power_permutation with params: ('strong', '100+', 27)
+03-Aug-24 02:44:16 - Starting compute_power_latent_space with params: ('strong', '100+', 46)
+03-Aug-24 04:40:29 - Finished compute_power_permutation with params: ('strong', '100+', 46)
+03-Aug-24 04:40:29 - Starting compute_power_latent_space with params: ('strong', '100+', 81)
+03-Aug-24 06:37:32 - Finished compute_power_permutation with params: ('strong', '100+', 81)
+03-Aug-24 06:37:32 - Starting compute_power_latent_space with params: ('strong', '100+', 142)
+03-Aug-24 08:35:14 - Finished compute_power_permutation with params: ('strong', '100+', 142)
+03-Aug-24 08:35:14 - Starting compute_power_latent_space with params: ('strong', '100+', 247)
+03-Aug-24 10:37:22 - Finished compute_power_permutation with params: ('strong', '100+', 247)
+03-Aug-24 10:37:22 - Starting compute_power_latent_space with params: ('strong', '100+', 432)
+03-Aug-24 13:16:37 - Finished compute_power_permutation with params: ('strong', '100+', 432)
+03-Aug-24 13:16:37 - Starting compute_power_latent_space with params: ('strong', '100+', 753)
