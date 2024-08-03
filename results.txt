@@ -1,13 +1,11 @@
 strong	10-30	5	0.478
 strong	100+	5	0.933
-strong	100+	5	0.933
 strong	0-10	5	0.2
 intermediate	0-10	5	0.067
 strong	10-30	5	0.454
 strong	30-60	5	0.724
 intermediate	10-30	5	0.132
 strong	70-100	5	0.88
-strong	100+	5	0.921
 intermediate	100+	5	0.463
 strong	70-100	15	1.0
 strong	0-10	15	0.563
@@ -150,19 +148,19 @@ intermediate	70-100	753	1.0
 low	30-60	753	0.554
 low	0-10	753	1.0
 low	70-100	753	0.629
-low 10-30   753 0.867 0.0
-strong	100+	1315	1.0	0.0
-low	100+	1315	0.856	0.0
-low	0-10	1315	1.0	0.0
-low	10-30	1315	1.0	0.0
-low	30-60	1315	0.984	0.0
-low	70-100	1315	0.976	0.0
-strong	0-10	1315	1.0	0.0
-strong	10-30	1315	1.0	0.0
-strong	30-60	1315	1.0	0.0
-strong	70-100	1315	1.0	0.0
-intermediate	100+	1315	1.0	0.0
-intermediate	0-10	1315	1.0	0.0
-intermediate	10-30	1315	1.0	0.0
-intermediate	30-60	1315	1.0	0.0
-intermediate	70-100	1315	1.0	0.0
+low 10-30   753 0.867
+strong	100+	1315	1.0
+low	100+	1315	0.856
+low	0-10	1315	1.0
+low	10-30	1315	1.0
+low	30-60	1315	0.984
+low	70-100	1315	0.976
+strong	0-10	1315	1.0
+strong	10-30	1315	1.0
+strong	30-60	1315	1.0
+strong	70-100	1315	1.0
+intermediate	100+	1315	1.0
+intermediate	0-10	1315	1.0
+intermediate	10-30	1315	1.0
+intermediate	30-60	1315	1.0
+intermediate	70-100	1315	1.0
