@@ -495,3 +495,16 @@ d26-May-24 23:07:01 - Loaded the dataset
 05-Aug-24 07:15:18 - Starting compute_power_latent_space with params: ('intermediate', '100+', 142)
 05-Aug-24 09:13:21 - Finished compute_power_permutation with params: ('intermediate', '100+', 142)
 05-Aug-24 09:13:21 - Starting compute_power_latent_space with params: ('intermediate', '100+', 247)
+05-Aug-24 22:27:14 - Loaded the dataset
+05-Aug-24 22:27:14 - Starting each param combination...
+05-Aug-24 22:27:14 - Starting compute_power_latent_space with params: ('intermediate', '100+', 247)
+06-Aug-24 00:29:29 - Finished compute_power_permutation with params: ('intermediate', '100+', 247)
+06-Aug-24 00:29:29 - Starting compute_power_latent_space with params: ('intermediate', '100+', 432)
+06-Aug-24 03:11:04 - Finished compute_power_permutation with params: ('intermediate', '100+', 432)
+06-Aug-24 03:11:04 - Starting compute_power_latent_space with params: ('intermediate', '100+', 753)
+07-Aug-24 01:16:50 - Finished compute_power_permutation with params: ('intermediate', '100+', 753)
+07-Aug-24 01:16:50 - Starting compute_power_latent_space with params: ('intermediate', '0-10', 5)
+08-Aug-24 11:23:08 - Loaded the dataset
+08-Aug-24 11:24:32 - Loaded the dataset
+08-Aug-24 11:24:32 - Starting each param combination...
+08-Aug-24 11:24:32 - Starting compute_power_latent_space with params: ('strong', '0-10', 5)

@@ -15,3 +15,6 @@ intermediate	100+	27	1.0	0.556
 intermediate	100+	46	1.0	0.952
 intermediate	100+	81	1.0	1.0
 intermediate	100+	142	1.0	1.0
+intermediate	100+	247	1.0	1.0
+intermediate	100+	432	1.0	1.0
+intermediate	100+	753	1.0	1.0
